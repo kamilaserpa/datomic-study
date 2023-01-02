@@ -1,0 +1,32 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <ClojureCodeStyleSettings>
+      <option name="indentCustomisations">
+        <map>
+          <entry key="clojure.test/testing" value="-1" />
+          <entry key="integration.aux.company/with-companies" value="-1" />
+          <entry key="integration.aux.init/defflow" value="-1" />
+          <entry key="integration.new-record-remessa-test/then-we-send-a-record-to-etl-with-envelope" value="-1" />
+          <entry key="matcher-combinators.test/match?" value="-1" />
+          <entry key="r2da.controllers.scheduled-payment/scheduled-payment" value="-1" />
+          <entry key="r2da.logic.automatic-debit-test/automatic-debit-registered" value="-1" />
+          <entry key="r2da.logic.automatic-debit-test/result" value="-1" />
+          <entry key="r2da.logic.automatic-debit/automatic-debit" value="-1" />
+          <entry key="r2da.logic.payment-test/automatic-debit-failed" value="-1" />
+          <entry key="schema.core/defn" value="-1" />
+          <entry key="schema.test/deftest" value="-1" />
+          <entry key="state-flow.core/flow" value="-1" />
+        </map>
+      </option>
+    </ClojureCodeStyleSettings>
+    <JetCodeStyleSettings>
+      <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
+    </JetCodeStyleSettings>
+    <ScalaCodeStyleSettings>
+      <option name="MULTILINE_STRING_CLOSING_QUOTES_ON_NEW_LINE" value="true" />
+    </ScalaCodeStyleSettings>
+    <codeStyleSettings language="kotlin">
+      <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
+    </codeStyleSettings>
+  </code_scheme>
+</component>
