@@ -1,6 +1,15 @@
-(ns ecommerce-datomic.core)
+(ns ecommerce-datomic.core
+  (:use clojure.pprint)
+  (:require [datomic.api :as d]
+            [ecommerce-datomic.db :as db]
+            [ecommerce-datomic.model :as model]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(def conn (db/abre-conexao))
+(pprint conn)
+
+(db/cria-schema conn)
+
+(let [computador
+      (model/novo-produto "Computador Novo", "/computador_novo", 2500.10M)]
+  (d/transact conn [computador]))
+
