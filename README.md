@@ -82,7 +82,8 @@ Será devolvido true, temos um banco de dados criado. Se tentarmos de novo criar
 
 No Datomic, não vamos pensar em várias tabelas, mas sim uma grande tabela. Nela, por exemplo, para o produto cujo ID é 15, o nome será Computador Novo, o slug será /computador_novo, e preco de 31500.10.
 
-Assim estaremos atribuindo ao ID da entidade id_entidade, e teremos o atributo (slug) e o valor. Como podemos ter várias entidades adicionamos o namespace (:produto) para diferenciar sua propriedades.
+Assim estaremos atribuindo ao ID da entidade id_entidade, e teremos o atributo (slug) e o valor. Como podemos ter várias entidades adicionamos o namespace (:produto) para diferenciar sua propriedades. O id da entidade corresponde ao atributo pré-definido `:db/ident` no Datomic.
+
 ```clojure
 ; id_entidade atributo valor
 ; 15      :produto/nome Computador Novo
@@ -99,12 +100,74 @@ Ao definir um schema para ser persistido no Datomic, indicamos o identificador (
               :db/doc "O nome de um produto"}]) 
 ```
 
+Ao transacionar o Schema com `(d/transact conn db/schema)` obtemos:
+```clojure
+; #datom [id-da-entidade atributo valor id-da-tx added?]
+#datom [72 10 :produto/nome 13194139534312 true]
+#datom [72 40 23 13194139534312 true]
+#datom [72 41 35 13194139534312 true]
+#datom [72 62 "O nome de um produto" 13194139534312 true]
+#datom [73 10 :produto/slug 13194139534312 true]
+#datom [73 40 23 13194139534312 true]
+#datom [73 41 35 13194139534312 true] 
+#datom [73 62 "O caminho para acessar esse produto via http 13194139534312 true]
+```
+
+Podemos observar que:
+ - :db/ident é 10
+ - :db/valueType é 40 e :db.type/string é 23
+ - :db/cardinality é 41 e :db.cardinality/one é 35
+ - :db/doc é 62
+
 Os tipos de valores possíveis (valueType) podem ser encontrados na doc [Schema | Datomic](https://docs.datomic.com/on-prem/schema/schema.html).
 
 Utilizamos `Cmd + Shift + P` sobre uma função para forçar a sua execução no REPL e transacional esse objeto. O `transact` recebe a conexão e uma sequência, no nosso caso, um vetor com um único item.
 
+#### INSERT
+
+Para **inserir** um dado utilizamos a função `d/transact` passando a [conexão](https://docs.datomic.com/on-prem/getting-started/connect-to-a-database.html#connecting).
+ > (d/transact conn [data])
+
 ![Console com informações após persistir dado](images/console-saved-object.png)
+
  Observamos que o quarto valor no banco indica o ID da transação "13194139534320", um valor que o Datomic gera para a entidade "1759...5425" e para cada atributo. Ou seja, para a entidade `...5425` o `72` tem valor "Computador Novo".
 
 Além disso o booleano ao final indica se houve inclusão `true`, ou retirada `false` de dados.
+
+## 2 Retract, updates e organização
+
+### 2.1 Delete só no log e update com insert
+
+Ao executar uma inserção `@(d/transact conn [(model/novo-produto "Celular barato" "/celular-barato" 350.0M)]` é retornado um [future](https://clojuredocs.org/clojure.core/future), desse modo recebemos uma `promisse`, como mostrado abaixo.
+
+```clojure
+#<promise$settable_future$reify__6969@7faacb17: 
+  {:db-before datomic.db.Db@122e1a04,
+   :db-after datomic.db.Db@3fd3033c,
+   :tx-data
+   [#datom[13194139534344 50 #inst "2023-01-18T22:24:34.928-00:00" 13194139534344 true] #datom[17592186045449 72 "Celular barato" 13194139534344 true] #datom[17592186045449 73 "/celular-barato" 13194139534344 true] #datom[17592186045449 74 350.0M 13194139534344 true]],
+   :tempids {-9223301668109598136 17592186045449}}>
+=> nil
+```
+
+Utilizamos `deref/@` para aguardar e receber o valor da `future`. Em instantes seguintes o sucesso possui as propriedades `:status ready` e `:val` com os dados transacionados.
+
+#### Algumas operações
+
+ - FIND
+
+Captura o id das entidades e o valor do atributo ":produto/nome" persistidas.
+```clojure
+(d/q '[:find ?entidade ?nome
+       :where [?entidade :produto/nome ?nome]] db)
+```
+
+ - UPDATE
+
+Atualiza o ":produto/preco" da entidade de com id-entidade passado como parâmetro: </br>
+`@(d/transact conn [[:db/add id-entidade :produto/preco 0.1M]])`
+
+Remove o atributo ":produto/slug" com valor "/celular-barato" da entidade com o id passado como parâmetro: </br>
+`@(d/transact conn [[:db/retract id-entidade :produto/slug "/celular-barato"]])`
+
 
