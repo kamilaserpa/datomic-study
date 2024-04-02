@@ -26,7 +26,11 @@
                       :db/cardinality :db.cardinality/one
                       :db/doc         "O preço de um produto com precisão monetária"}])
 
-(defn cria-schema
+(defn cria-produto-schema
   [conn]
   (d/transact conn produto-schema))
+
+(defn todos-os-produtos [db]
+  (d/q '[:find ?entidade ?nome
+         :where [?entidade :produto/nome ?nome]] db))
 

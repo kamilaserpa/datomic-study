@@ -1,6 +1,6 @@
-# Datomic: ecommerce
+# Datomic Study
 
-Aplicação clojure para estudo do bando de dados Datomic, em acompanhamento da formação Datomic da plataforma Alura.
+Aplicação clojure para estudo do banco de dados Datomic, em acompanhamento da formação Datomic da plataforma Alura.
 O formato de negócio é ecommerce.
 
 ### Developer
@@ -20,17 +20,17 @@ O formato de negócio é ecommerce.
 
 #### Servidor
 
-O download da versão Starter pode ser feito em https://www.datomic.com/get-datomic.html, uma conta deve ser criada. A versão aqui utilizada foi `1.0.6269`, pois as mais atuais não foram compatíveis.
+O download da versão Starter pode ser feito em https://www.datomic.com/get-datomic.html, uma conta deve ser criada. A versão aqui utilizada foi `datomic-pro-1.0.6269`, pois as mais atuais não foram compatíveis.
 
 Ao realizar o download recebemos a licença por e-mail, devemos inserir a licença no arquivo `config/samples/dev-transactor-template.properties`.
 Após inserir a licença deve-se salvar o arquivo e copiá-lo na pasta `datomic-pro-x.x.xxx/config`.
 
-Necessário o maven para instalação. Exporte a variável maven com:
+É necessário o maven para instalação. Exporte a variável maven com:
 > export PATH=$PATH:/Users/kamila.serpa/Documents/Apps/apache-maven-3.8.6/bin
 
-Para instalar execute o comando `bin/maven-install` na pasta do Datomic. Para verificar a versão instalada execute o comando `cd ~/.m2/repository/com/datomic/dev-local/`, `ls` para listar as pastas, deve estar presemte a pasta com o nome da versão instalada.
+Para instalar execute o comando `bin/maven-install` na pasta do Datomic. Para verificar a versão instalada execute o comando `cd ~/.m2/repository/com/datomic/dev-local/`, `ls` para listar as pastas, deve estar presente a pasta com o nome da versão instalada.
 
-Para executar o servidor Datomic acesse o terminal na pasta do Datomic e execute `bin transactor <LOCAL/NOME-DO-ARQUIVO.properties>`, por exemplo:
+Para **executar o servidor Datomic** acesse o terminal na pasta do Datomic (`<local-path>/datomic-pro-1.0.6269`) e execute `bin transactor <LOCAL/NOME-DO-ARQUIVO.properties>`, por exemplo:
 
  > bin/transactor config/dev-transactor-template.properties
 
@@ -39,15 +39,16 @@ Espera-se que seja exibida a porta em que o banco de dados servidor está sendo 
 
 #### Conexão com servidor
 
-##### Forma 1
+##### Forma 1 (utilizada)
 
-_Optamos por esta maneira neste projeto!_ Para usar Datomic API e criar um banco de dados vamos utilizar o leiningen conforme a [documentação](https://docs.datomic.com/on-prem/peer/integrating-peer-lib.html#leiningen).
+_Optamos por esta maneira neste projeto!_
+Para usar Datomic API e criar um banco de dados vamos utilizar o leiningen conforme a [documentação](https://docs.datomic.com/on-prem/peer/integrating-peer-lib.html#leiningen).
 
 Adicione a dependência no arquivo `project.clj :dependencies` (entre aspas insira a versão utilizada no passo anterior):
  > [com.datomic/datomic-pro "1.0.6269"]
 
 A biblioteca não é disponibilizada de forma aberta, então deve-se acessar a página https://my.datomic.com/downloads/pro. Estando logado no site, clique em _My account_ e veja ao final como baixar via leiningen.
-Crie o arquivo `credentials.clj.gpg` e adicione no diretório `.lein` no formato
+Crie o arquivo `credentials.clj.gpg` e o adicione no diretório local `.lein` com o conteúdo no formato:
 
  > {#"my\.datomic\.com" {:username " ************ " 
  >                       :password " ************ "}}
@@ -68,7 +69,7 @@ Adicione essa versão no project.clj, segundo a [documentação](https://docs.da
 
 #### Testando instalação
 Vamos rodar nosso project.clj no REPL. 
-Vamos rodar esse código que vai requerer a biblioteca datomic. Em seguida definimos um símbolo com os dados da conexão localhost na porta 4334 em um banco de dados chamado "hello" e criamos o banco de dados através do comando `d/create-database` passando o símbolo `db-url`.
+Vamos rodar esse código que vai requerer a biblioteca datomic. Em seguida definimos um símbolo com os dados da conexão localhost na porta 4334 em um banco de dados chamado "hello" e criamos o banco de dados através do comando `d/create-database` passando o símbolo `db-url`. Esses comandos podem ser executados no REPL.
 
 ```clojure
   (require '[datomic.api :as d])
@@ -100,6 +101,9 @@ Ao definir um schema para ser persistido no Datomic, indicamos o identificador (
               :db/doc "O nome de um produto"}]) 
 ```
 
+Executamos o REPL, nREPL with Leiningen e carregamos o arquivo e.core com `Cmd + Shift + L`, para executar o conteúdo do arquivo.
+Podemos utilizar também `Cmd + Shift + P` sobre uma função para forçar a sua execução no REPL e transacionar esse objeto.
+
 Ao transacionar o Schema com `(d/transact conn db/schema)` obtemos:
 ```clojure
 ; #datom [id-da-entidade atributo valor id-da-tx added?]
@@ -113,15 +117,19 @@ Ao transacionar o Schema com `(d/transact conn db/schema)` obtemos:
 #datom [73 62 "O caminho para acessar esse produto via http 13194139534312 true]
 ```
 
+Onde:
+> #datom [id-da-entidade atributo valor id-da-tx added?]
+
 Podemos observar que:
  - :db/ident é 10
  - :db/valueType é 40 e :db.type/string é 23
  - :db/cardinality é 41 e :db.cardinality/one é 35
  - :db/doc é 62
 
-Os tipos de valores possíveis (valueType) podem ser encontrados na doc [Schema | Datomic](https://docs.datomic.com/on-prem/schema/schema.html).
+Os tipos de valores possíveis (valueType) podem ser encontrados na doc [Schema | Datomic](https://docs.datomic.com/on-prem/schema/schema.html) e [Schema Data Reference](https://docs.datomic.com/cloud/schema/schema-reference.html).
 
-Utilizamos `Cmd + Shift + P` sobre uma função para forçar a sua execução no REPL e transacional esse objeto. O `transact` recebe a conexão e uma sequência, no nosso caso, um vetor com um único item.
+O `transact` recebe a conexão e uma sequência, no nosso caso, um vetor com um único item.
+O bollean `true` indica que é uma inserção de valor.
 
 #### INSERT
 
@@ -133,6 +141,7 @@ Para **inserir** um dado utilizamos a função `d/transact` passando a [conexão
  Observamos que o quarto valor no banco indica o ID da transação "13194139534320", um valor que o Datomic gera para a entidade "1759...5425" e para cada atributo. Ou seja, para a entidade `...5425` o `72` tem valor "Computador Novo".
 
 Além disso o booleano ao final indica se houve inclusão `true`, ou retirada `false` de dados.
+Por padrão o Datomic aceita chaves sem valor, vazias. Já se tentar inserir um atributo com valor `nil` obtemos um erro. Portanto devemos apenas não enviar uma chave caso ela esteja vazia.
 
 ## 2 Retract, updates e organização
 
@@ -164,10 +173,20 @@ Captura o id das entidades e o valor do atributo ":produto/nome" persistidas.
 
  - UPDATE
 
-Atualiza o ":produto/preco" da entidade de com id-entidade passado como parâmetro: </br>
-`@(d/transact conn [[:db/add id-entidade :produto/preco 0.1M]])`
+Atualiza o ":produto/preco" da entidade celular com id-entidade passado como parâmetro: </br>
+`@(d/transact conn [[:db/add id-entidade-celular :produto/preco 0.1M]])`.
 
-Remove o atributo ":produto/slug" com valor "/celular-barato" da entidade com o id passado como parâmetro: </br>
+Obseve que foi adicionado um `true` com valor 0.1M e um false no valor anterior 350.0M.
+
+```clojure
+{:db-before datomic.db.Db@5f85640,
+ :db-after datomic.db.Db@5db24ccb,
+ :tx-data
+ [#datom[13194139534495 50 #inst "2024-04-02T21:47:50.679-00:00" 13194139534495 true] #datom[17592186045598 74 0.1M 13194139534495 true] #datom[17592186045598 74 350.0M 13194139534495 false]],
+ :tempids {}}
+```
+
+"Remove" o atributo ":produto/slug" com valor "/celular-barato" da entidade com o id passado como parâmetro. Lembrando: remover um item não significa que ele removeu de verdade, significa apenas que ele tem um log falando a partir desse instante da historia do banco, esse valor não deve estar mais lá: 
+</br>
 `@(d/transact conn [[:db/retract id-entidade :produto/slug "/celular-barato"]])`
-
 
