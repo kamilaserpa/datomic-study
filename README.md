@@ -190,3 +190,32 @@ Obseve que foi adicionado um `true` com valor 0.1M e um false no valor anterior 
 </br>
 `@(d/transact conn [[:db/retract id-entidade :produto/slug "/celular-barato"]])`
 
+#### Atomicidade
+Ao tentarmos transacionar os quatro produtos abaixo ao mesmo tempo, obteremos um erro em "celular-barato" pois está com preço nulo.
+```clojure
+(let [computador (model/novo-produto "Computador Novo", "/computador_novo", 2500.10M) 
+     celular (model/novo-produto "Celular Caro", "/celular", 888888.10M)
+     calculadora {:produto/nome "Calculadora com 4 operações"}
+     celular-barato (model/novo-produto "Celular Barato", "/celular-barato", nil)]
+    (d/transact conn [computador celular calculadora celular-barato]))
+```
+Nesse caso a transação toda é cancelada e nhuma das entidades é persistida.
+
+Essa característica transacional de fazer "ou tudo ou nada" é chamada de Atomicidade: se uma parte da transação falhar, a transação toda falha e nenhuma mudança é feita no BD.
+Mais informações sobre outras características transacionais do Datomic em: https://docs.datomic.com/on-prem/acid.html
+
+## 3 Mais queries
+
+### Queries com parâmetros
+
+Buscando todas as entidades com slug igual ao `slug-param` recebido pela função. Nesse caso precisamos passaar dois parâmetros para a cobnsulta, o db e o slug procurado. Portanto colocamos esses valores no `:in`. Para o banco de dados a nomenclatura padrão é um `$`(cifrão).
+Dessa forma `?entidade`é um valor qualquer que será buscado, já `$`e `?slug` são variáveis de valor fixo "bindados" dentro da consulta.
+
+```clojure
+(defn todos-os-produtos-por-slug [db slug-param]
+  (d/q '[:find  ?entidade
+         :in    $ ?slug
+         :where [?entidade :produto/slug ?slug]]
+       db slug-param))
+```
+

@@ -32,5 +32,24 @@
 
 (defn todos-os-produtos [db]
   (d/q '[:find ?entidade ?nome
-         :where [?entidade :produto/nome ?nome]] db))
+         :where [?entidade :produto/nome ?nome]]
+       db))
+
+(defn todos-os-produtos-por-slug-fixo [db]
+  (d/q '[:find ?entidade
+         :where [?entidade :produto/slug "/computador-dell"]]
+       db))
+
+; Pode ser extraída a query para ser reaproveitada em outra função
+; "-q" notação húngara informanto o tipo, não recomendada, muito menos abreviada
+(def todos-os-produtos-por-slug-query
+  '[:find ?entidade
+    :where [?entidade :produto/slug slug-param]])
+
+(defn todos-os-produtos-por-slug [db slug-param]
+  (d/q '[:find ?entidade
+         :in $ ?slug
+         :where [?entidade :produto/slug ?slug]]
+       db slug-param))
+
 
