@@ -219,3 +219,4 @@ Dessa forma `?entidade`é um valor qualquer que será buscado, já `$`e `?slug` 
        db slug-param))
 ```
 
+O Datomic trabalha com conjuntos portanto não vem em ordem predefinida, é possível ordenar após buscar os dados.

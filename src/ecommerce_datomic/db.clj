@@ -30,12 +30,14 @@
   [conn]
   (d/transact conn produto-schema))
 
-(defn todos-os-produtos [db]
+(defn todos-os-produtos
+  [db]
   (d/q '[:find ?entidade ?nome
          :where [?entidade :produto/nome ?nome]]
        db))
 
-(defn todos-os-produtos-por-slug-fixo [db]
+(defn todos-os-produtos-por-slug-fixo
+  [db]
   (d/q '[:find ?entidade
          :where [?entidade :produto/slug "/computador-dell"]]
        db))
@@ -46,10 +48,18 @@
   '[:find ?entidade
     :where [?entidade :produto/slug slug-param]])
 
-(defn todos-os-produtos-por-slug [db slug-param]
+(defn todos-os-produtos-por-slug
+  [db slug-param]
   (d/q '[:find ?entidade
-         :in $ ?slug
-         :where [?entidade :produto/slug ?slug]]
+         :in $ ?slug-param                                  ; Proprositalmente nomeado de forma diferente para não ser confundido com "slug-param" sem interrogação
+         :where [?entidade :produto/slug ?slug-param]]
        db slug-param))
+
+(defn todos-os-slugs
+  "Busca entidade (?e) produto que possui algum valor em :produto/slug, como entidade não está sendo retornada substituímos por undderscore"
+  [db]
+  (d/q '[:find ?qualquer-slug
+         :where [_ :produto/slug ?qualquer-slug]]
+       db))
 
 
