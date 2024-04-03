@@ -143,7 +143,7 @@ Para **inserir** um dado utilizamos a função `d/transact` passando a [conexão
 Além disso o booleano ao final indica se houve inclusão `true`, ou retirada `false` de dados.
 Por padrão o Datomic aceita chaves sem valor, vazias. Já se tentar inserir um atributo com valor `nil` obtemos um erro. Portanto devemos apenas não enviar uma chave caso ela esteja vazia.
 
-## 2 Retract, updates e organização
+## 2. Retract, updates e organização
 
 ### 2.1 Delete só no log e update com insert
 
@@ -204,7 +204,7 @@ Nesse caso a transação toda é cancelada e nhuma das entidades é persistida.
 Essa característica transacional de fazer "ou tudo ou nada" é chamada de Atomicidade: se uma parte da transação falhar, a transação toda falha e nenhuma mudança é feita no BD.
 Mais informações sobre outras características transacionais do Datomic em: https://docs.datomic.com/on-prem/acid.html
 
-## 3 Mais queries
+## 3. Mais queries
 
 ### Queries com parâmetros
 
@@ -221,7 +221,7 @@ Dessa forma `?entidade`é um valor qualquer que será buscado, já `$`e `?slug` 
 
 O Datomic trabalha com conjuntos portanto não vem em ordem predefinida, é possível ordenar após buscar os dados.
 
-### 4 Pull
+## 4. Pull
 
 Para retornar os valores como mapas podemos usar `:keys`, a seguir retornamos as propriedades ?nome e ?preco como valores das keys `:produto/nome` e `:produto/preco`:
 
@@ -266,3 +266,13 @@ Que retornará algo como:
  [...]]
 ```
 
+## 5. Bancos filtrados e histórico
+Uma das grandes capacidades do Datomic é permitir o armazenamento dos eventos que ocorrerem e nos permitir voltar para o passado, acessando todo o histórico.
+Podemos solicitar a situação do banco em um momento específico através do [asOf Filter](https://docs.datomic.com/pro/time/filters.html#as-of): (d/as-of conn ???)), sendo que "???" será o momento que passaremos em que o banco estava e queremos executar a query.
+
+```clojure
+  (db/todos-os-produtos (d/as-of (d/db conn) #inst "2024-04-03T17:45:26.512-00:00"))
+  ; outra possibilidade e definir um snapshot de um momento anterior do banco
+  (def fotografia-no-passado (d/db conn))
+  (db/todos-os-produtos fotografia-no-passado)
+```
