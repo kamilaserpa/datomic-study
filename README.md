@@ -294,7 +294,39 @@ No Datomic tanto o banco quanto nós planejaremos índices, porém os planos de 
                 db preco-minimo-requisitado))
 ```
 
+### Cardinalidade
 
+Adicionamos na entidade produto o atributo `:produto/palavra-chave` com a cardinalidade `:db.cardinality/many`.
+```clojure
+{:db/ident       :produto/palavra-chave
+ :db/valueType   :db.type/string
+ :db/cardinality :db.cardinality/many
+ :db/doc         "Palavras-chave com características do produto"}
+```
+Podemos inserir valor para esse atributo com `:db/add`:
+> (d/transact ecommerce.core/conn [[:db/add (:db/id produto-computador-acer) :produto/palavra-chave "computador"]]))`
+
+Exemplo de entidade com o vetor de strings:
+```clojure
+  {:db/id 17592186045420,
+   :produto/nome "Computador Acer",
+   :produto/slug "/computador-acer",
+   :produto/preco 2700.0M,
+   :produto/palavra-chave ["computador" "desktop"]}
+```
+
+Também podemos remover uma palavra-chave com `:db/retract`:
+> (d/transact ecommerce.core/conn [[:db/retract (:db/id produto-tv-philips) :produto/palavra-chave "smart"]]))
+
+A query de busca por palavra-chave fica semelhante ao já mencionado anteriormente:
+```clojure
+(defn produtos-por-palavra-chave
+  [db palavra-chave-param]
+  (d/q '[:find (pull ?produto [*])
+         :in $, ?palavra-chave
+         :where [?produto :produto/palavra-chave ?palavra-chave]]
+       db palavra-chave-param))
+```
 
 
 

@@ -24,7 +24,12 @@
                      {:db/ident       :produto/preco
                       :db/valueType   :db.type/bigdec
                       :db/cardinality :db.cardinality/one
-                      :db/doc         "O preço de um produto com precisão monetária"}])
+                      :db/doc         "O preço de um produto com precisão monetária"}
+
+                     {:db/ident       :produto/palavra-chave
+                      :db/valueType   :db.type/string
+                      :db/cardinality :db.cardinality/many
+                      :db/doc         "Palavras-chave com características do produto"}])
 
 (defn cria-produto-schema
   [conn]
@@ -105,4 +110,11 @@
                 [(> ?preco ?preco-minimo)]       ; filtrar preco
                 [?produto :produto/nome ?nome]]  ; só então pegar o nome
        db preco-minimo))
+
+(defn produtos-por-palavra-chave
+  [db palavra-chave-param]
+  (d/q '[:find (pull ?produto [*])
+         :in $, ?palavra-chave
+         :where [?produto :produto/palavra-chave ?palavra-chave]]
+       db palavra-chave-param))
 

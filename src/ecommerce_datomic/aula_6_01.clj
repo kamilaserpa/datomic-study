@@ -7,12 +7,10 @@
 
 ;(ecommerce.db/deleta-banco)
 
-(let [calculadora-lg      (model/novo-produto "Calculadora LG" "/calcualdora-lg" 129.99M)
+(let [calculadora-lg      (model/novo-produto "Calculadora LG" "/calculadora-lg" 129.99M)
       tv-philips          (model/novo-produto "TV Philips" "/tv-philips" 3500.0M)
-      computador-acer
-                          (model/novo-produto "Computador Acer" "/computador-acer" 2700.0M)
-      celular-xiaomi
-                          (model/novo-produto "Celular Xiaomi" "/celular-xiaomi" 1500.0M)
+      computador-acer     (model/novo-produto "Computador Acer" "/computador-acer" 2700.0M)
+      celular-xiaomi      (model/novo-produto "Celular Xiaomi" "/celular-xiaomi" 1500.0M)
       resultado-transacao @(d/transact ecommerce.core/conn [calculadora-lg tv-philips computador-acer celular-xiaomi])]
   (pprint resultado-transacao))
 
