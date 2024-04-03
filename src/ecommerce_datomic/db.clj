@@ -95,3 +95,14 @@
          [?produto :produto/nome ?nome]]
        db))
 
+(defn produtos-com-preco-maior-que
+  "Em geral deixar as condições da mais restritiva para a menos restritiva"
+  [db preco-minimo]
+  (d/q '[:find ?nome, ?preco
+         :in $, ?preco-minimo
+         :keys produto/nome, produto/preco
+         :where [?produto :produto/preco ?preco] ; pegar preco
+                [(> ?preco ?preco-minimo)]       ; filtrar preco
+                [?produto :produto/nome ?nome]]  ; só então pegar o nome
+       db preco-minimo))
+

@@ -276,3 +276,26 @@ Podemos solicitar a situação do banco em um momento específico através do [a
   (def fotografia-no-passado (d/db conn))
   (db/todos-os-produtos fotografia-no-passado)
 ```
+
+## 6. Otimizações e cardinalidade
+
+Numa query podemos usar funções. Mas devemos ter cuidado, pois o código sempre executará na ordem. Então, existe uma questão de otimização que em bancos SQL em geral são decisões tomadas pelo próprio banco de acordo com os índices, chamadas plano de ação. Ele olha a query que fizemos e o próprio banco decide quais serão os wheres e joins a ser feitos e em qual ordem, esperando minimizar o impacto no algoritmo de filtragem, para que ele execute o mais rápido o possível, passando pelo mínimo de elementos.
+
+No Datomic tanto o banco quanto nós planejaremos índices, porém os planos de ação serão definidos pela consulta. Dessa forma é mais interessante primeiro filtrar os preções dos produtos para então capturar os atributos nomes.
+
+```clojure
+(defn todos-os-produtos-por-preco [db preco-minimo-requisitado]
+   (d/q '[:find ?nome, ?preco
+          :in $, ?preco-minimo
+          :keys produto/nome, produto/preco
+          :where [?produto :produto/preco ?preco]
+                 [(> ?produto ?preco-minimo)]  
+                 [(?produto :produto/nome ?nome)]
+                db preco-minimo-requisitado))
+```
+
+
+
+
+
+
