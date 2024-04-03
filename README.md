@@ -220,3 +220,49 @@ Dessa forma `?entidade`é um valor qualquer que será buscado, já `$`e `?slug` 
 ```
 
 O Datomic trabalha com conjuntos portanto não vem em ordem predefinida, é possível ordenar após buscar os dados.
+
+### 4 Pull
+
+Para retornar os valores como mapas podemos usar `:keys`, a seguir retornamos as propriedades ?nome e ?preco como valores das keys `:produto/nome` e `:produto/preco`:
+
+```clojure
+(defn todos-os-produtos-por-preco [db]
+ (d/q '[:find ?nome, ?preco
+        :keys produto/nome, produto/preco
+        :where [?produto :produto/preco ?preco]
+               [?produto :produto/nome ?nome]]
+      db))
+```
+Dessa forma retornará:
+
+```
+[#:produto{:nome "Celular Motorola", :preco 876.0M}
+ #:produto{:nome "Calculadora Portátil", :preco 9.99M}
+ #:produto{:nome "Computador Dell", :preco 3700.0M}
+ #:produto{:nome "Celular Sansumg", :preco 1350.0M}]
+```
+
+ Podemos utilizar o pull explícito, no qual explicitamos os atributos que desejamos retornar para essa entidade:
+
+```clojure
+(defn todos-os-produtos [db]
+    (d/q '[:find (pull ?etidade [:produto/nome :produto/preco :produto/slug])
+        :where ?entidade :produto/nome]] db))
+```
+
+Ou o o pull implícito, no qual retornamos todos os atributos dessa entidade:
+
+```clojure
+(defn todos-os-produtos [db]
+    (d/q '[:find (pull ?etidade [*]) ; <-
+        :where ?entidade :produto/nome]] db))
+```
+Que retornará algo como:
+```
+[[{:db/id 17592186045640,
+   :produto/nome "Calculadora Portátil",
+   :produto/slug "/calculadora-portatil",
+   :produto/preco 9.99M}]
+ [...]]
+```
+

@@ -30,9 +30,23 @@
   [conn]
   (d/transact conn produto-schema))
 
-(defn todos-os-produtos
+(defn todos-os-produtos-com-nome-ids
   [db]
-  (d/q '[:find ?entidade ?nome
+  (d/q '[:find ?entidade
+         :where [?entidade :produto/nome ?nome]]
+       db))
+
+(defn todos-os-produtos-com-nome-full-entity-1
+  "Pull explícito"
+  [db]
+  (d/q '[:find (pull ?entidade [:produto/nome :produto/preco :produto/slug])
+         :where [?entidade :produto/nome ?nome]]
+       db))
+
+(defn todos-os-produtos-com-nome-full-entity-2
+  "Pull genérico, retorna todos os atributos, inclusive o :id"
+  [db]
+  (d/q '[:find (pull ?entidade [*])
          :where [?entidade :produto/nome ?nome]]
        db))
 
@@ -62,6 +76,7 @@
          :where [_ :produto/slug ?qualquer-slug]]
        db))
 
+; Retorna tuplas com valores, sem nome de atributo, não é boa prática: #{["Celular Motorola" 876.0M] ["Calculadora Portátil" 9.99M] ...}
 (defn todos-os-produtos-com-preco-e-nome
   "Nomear a entidade como ?produto e passar como variável na próxima linha faz com que as consultas
   se refiram a mesma entidade de produto. Datomic procura qualquer entidade que tenha esse atributo :produto/preco,
@@ -72,4 +87,11 @@
          [?produto :produto/nome ?nome]]
        db))
 
+(defn todos-os-produtos-com-preco-e-nome-map
+  [db]
+  (d/q '[:find ?nome, ?preco
+         :keys produto/nome, produto/preco
+         :where [?produto :produto/preco ?preco]
+         [?produto :produto/nome ?nome]]
+       db))
 

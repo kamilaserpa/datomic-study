@@ -14,4 +14,4 @@
   (d/transact ecommerce.core/conn [computador-dell celular-motorola celular-sansumg calculadora-portatil mouse-logitech]))
 
 ; Lembrando! (d/db ecommerce.core/conn) é um snapshot, uma fotografia do banco no momento da execução
-(pprint (ecommerce.db/todos-os-produtos (d/db ecommerce.core/conn)))
+(pprint (ecommerce.db/todos-os-produtos-com-nome-ids (d/db ecommerce.core/conn)))
