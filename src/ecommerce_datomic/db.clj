@@ -62,4 +62,14 @@
          :where [_ :produto/slug ?qualquer-slug]]
        db))
 
+(defn todos-os-produtos-com-preco-e-nome
+  "Nomear a entidade como ?produto e passar como variável na próxima linha faz com que as consultas
+  se refiram a mesma entidade de produto. Datomic procura qualquer entidade que tenha esse atributo :produto/preco,
+  por isso a nomenclatura de colocar o nome da entidade na frente."
+  [db]
+  (d/q '[:find ?nome, ?preco
+         :where [?produto :produto/preco ?preco]
+         [?produto :produto/nome ?nome]]
+       db))
+
 
