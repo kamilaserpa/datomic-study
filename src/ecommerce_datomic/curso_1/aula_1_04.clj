@@ -1,4 +1,4 @@
-(ns ecommerce-datomic.aula-1-04
+(ns ecommerce-datomic.curso-1.aula-1-04
   (:use clojure.pprint)
   (:require [datomic.api :as d]
             [ecommerce-datomic.core :as ecommerce.core]
