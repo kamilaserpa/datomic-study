@@ -3,6 +3,7 @@
   (:require [datomic.api :as d]
             [ecommerce-datomic.core :as ecommerce.core]
             [ecommerce-datomic.model :as model]))
+; Evaluate e.core first
 
 ; INSERT
 ; d/transact recebe uma conexão e uma sequência com uma entidade

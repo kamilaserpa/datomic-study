@@ -118,3 +118,6 @@
          :where [?produto :produto/palavra-chave ?palavra-chave]]
        db palavra-chave-param))
 
+(defn find-produto [db produto-id]
+  (d/pull db '[*] produto-id))
+

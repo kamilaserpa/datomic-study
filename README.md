@@ -328,6 +328,14 @@ A query de busca por palavra-chave fica semelhante ao já mencionado anteriormen
        db palavra-chave-param))
 ```
 
+## Curso 2 - Datomic Queries: avançando com o modelo e pesquisas
 
+É possível visualizar os dados do banco através do navegador com o [Datomic Console](https://docs.datomic.com/pro/other-tools/console.html). 
+Na pasta daotmic/bin executamos o comando abaixo:
+> bin/console -p 8080 dev datomic:dev://localhost:4334/
+
+Então podemos acesar o banco no navegador pelo link http://localhost:8080/browse.
+
+<img src="./images/datomic-console.png" width="800">
 
 
