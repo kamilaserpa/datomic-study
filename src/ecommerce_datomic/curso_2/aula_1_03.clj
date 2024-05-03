@@ -5,7 +5,7 @@
             [ecommerce-datomic.db :as ecommerce.db]
             [ecommerce-datomic.model :as model]))
 
-; (ecommerce.db/deleta-banco)
+;(ecommerce.db/deleta-banco)
 
 (def conn (ecommerce.db/abre-conexao))
 
@@ -18,10 +18,19 @@
   (pprint @(d/transact conn [computador, celular, calculadora, celular-barato])))
 
 (def produtos (ecommerce.db/todos-os-produtos-com-nome-full-entity-2  (d/db conn)))
-(def primeiro-produto-id (-> produtos
-                             first
-                             first
-                             :db/id))
-(println "O id do primeiro produto encontrado é:" primeiro-produto-id)
-(pprint (ecommerce.db/find-produto (d/db conn) primeiro-produto-id))
+(println "Todos os produtos são: ")
+(pprint produtos)
 
+(def primeiro-produto-dbid (-> produtos
+                               ffirst
+                               :db/id))
+(println "O db id do primeiro produto encontrado é:" primeiro-produto-dbid)
+(pprint (ecommerce.db/busca-produto-por-dbid (d/db conn) primeiro-produto-dbid))
+
+(println "---------------------------------")
+
+(def primeiro-produto-uuid (-> produtos
+                               ffirst
+                               :produto/id))
+
+(pprint (ecommerce.db/busca-produto-por-uuid (d/db conn) primeiro-produto-uuid))

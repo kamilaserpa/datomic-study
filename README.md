@@ -338,4 +338,12 @@ Então podemos acesar o banco no navegador pelo link http://localhost:8080/brows
 
 <img src="./images/datomic-console.png" width="800">
 
+### 1.4 - Identificadores únicos e UUIDs
+O Datomic gera ids sequenciais permitindo inferir algum id, comprometendo a segurança de dados. Por esse modo adicionamos um identificador do tipo uuid para o produto como o atributo `:produto/id`.
 
+Para a consulta realizamos uma busca por referência ou [Lookup Refs](https://docs.datomic.com/pro/schema/identity.html#lookup-refs). "Uma referência de pesquisa é um java.util.List contendo um atributo e um valor. Ele identifica a entidade com o valor de atributo exclusivo fornecido." No nosso exemplo seria `[:produto/id produto-id]`.
+
+```clojure
+(defn busca-produto-por-uuid [db produto-id]
+  (d/pull db '[*] [:produto/id produto-id]))
+```

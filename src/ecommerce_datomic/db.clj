@@ -11,7 +11,13 @@
 (defn deleta-banco []
   (d/delete-database db-uri))
 
-(def produto-schema [{:db/ident       :produto/nome
+(def produto-schema [{:db/ident       :produto/id
+                      :db/valueType   :db.type/uuid
+                      :db/cardinality :db.cardinality/one
+                      :db/unique      :db.unique/identity
+                      :db/doc         "Identificador único do produto"}
+
+                     {:db/ident       :produto/nome
                       :db/valueType   :db.type/string
                       :db/cardinality :db.cardinality/one
                       :db/doc         "O nome de um produto"}
@@ -118,6 +124,10 @@
          :where [?produto :produto/palavra-chave ?palavra-chave]]
        db palavra-chave-param))
 
-(defn find-produto [db produto-id]
-  (d/pull db '[*] produto-id))
+(defn busca-produto-por-dbid [db produto-db-id]
+  "Por padrão o pull usa o identificador do banco (:db/id)"
+  (d/pull db '[*] produto-db-id))
+
+(defn busca-produto-por-uuid [db produto-id]
+  (d/pull db '[*] [:produto/id produto-id]))
 
