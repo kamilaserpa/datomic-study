@@ -11,35 +11,52 @@
 (defn deleta-banco []
   (d/delete-database db-uri))
 
-(def produto-schema [{:db/ident       :produto/id
-                      :db/valueType   :db.type/uuid
-                      :db/cardinality :db.cardinality/one
-                      :db/unique      :db.unique/identity
-                      :db/doc         "Identificador único do produto"}
+(def db-schema [
+                ; Produto
+                {:db/ident       :produto/id
+                 :db/valueType   :db.type/uuid
+                 :db/cardinality :db.cardinality/one
+                 :db/unique      :db.unique/identity
+                 :db/doc         "Identificador único do produto"}
 
-                     {:db/ident       :produto/nome
-                      :db/valueType   :db.type/string
-                      :db/cardinality :db.cardinality/one
-                      :db/doc         "O nome de um produto"}
+                {:db/ident       :produto/nome
+                 :db/valueType   :db.type/string
+                 :db/cardinality :db.cardinality/one
+                 :db/doc         "O nome de um produto"}
 
-                     {:db/ident       :produto/slug
-                      :db/valueType   :db.type/string
-                      :db/cardinality :db.cardinality/one
-                      :db/doc         "O caminho para acessar um produto via http"}
+                {:db/ident       :produto/slug
+                 :db/valueType   :db.type/string
+                 :db/cardinality :db.cardinality/one
+                 :db/doc         "O caminho para acessar um produto via http"}
 
-                     {:db/ident       :produto/preco
-                      :db/valueType   :db.type/bigdec
-                      :db/cardinality :db.cardinality/one
-                      :db/doc         "O preço de um produto com precisão monetária"}
+                {:db/ident       :produto/preco
+                 :db/valueType   :db.type/bigdec
+                 :db/cardinality :db.cardinality/one
+                 :db/doc         "O preço de um produto com precisão monetária"}
 
-                     {:db/ident       :produto/palavra-chave
-                      :db/valueType   :db.type/string
-                      :db/cardinality :db.cardinality/many
-                      :db/doc         "Palavras-chave com características do produto"}])
+                {:db/ident       :produto/palavra-chave
+                 :db/valueType   :db.type/string
+                 :db/cardinality :db.cardinality/many
+                 :db/doc         "Palavras-chave com características do produto"}
 
-(defn cria-produto-schema
+                {:db/ident       :produto/categoria
+                 :db/valueType   :db.type/ref
+                 :db/cardinality :db.cardinality/one
+                 :db/doc         "Categoria do produto"}
+
+                ; Categoria
+                {:db/ident       :categoria/nome
+                 :db/valueType   :db.type/string
+                 :db/cardinality :db.cardinality/one}
+
+                {:db/ident       :categoria/id
+                 :db/valueType   :db.type/uuid
+                 :db/cardinality :db.cardinality/one
+                 :db/unique      :db.unique/identity}])
+
+(defn cria-schema
   [conn]
-  (d/transact conn produto-schema))
+  (d/transact conn db-schema))
 
 (defn todos-os-produtos-com-nome-ids
   [db]
@@ -130,4 +147,10 @@
 
 (defn busca-produto-por-uuid [db produto-id]
   (d/pull db '[*] [:produto/id produto-id]))
+
+(defn todas-as-categorias [db]
+  (d/q '[:find (pull ?categoria [*])
+         :where [?categoria :categoria/id]]
+       db))
+
 

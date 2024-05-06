@@ -8,7 +8,7 @@
 
 (def conn (ecommerce.db/abre-conexao))
 
-(ecommerce.db/cria-produto-schema conn)
+(ecommerce.db/cria-schema conn)
 
 (def computador (model/novo-produto "Computador Novo", "/computador-novo", 2500.10M))
 (def celular (model/novo-produto "Celular Caro", "/celular", 888888.10M))

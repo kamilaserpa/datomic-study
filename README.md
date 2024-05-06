@@ -356,3 +356,5 @@ Ao tentarmos transacionar uma entidade com o `produto/id` ja persistido no banco
 (pprint @(d/transact conn [celular-barato-2])))
 ```
 Na verdade, a entidade foi sobrescrita, afinal o campo id é um indetificador único (db/unique). Quando tentamos inserir itens em um id já existente, é como se ocorre uma atualização do produto, isto é, acontece uma sobreposição. Ele sobrescreve os atributos daquela entidade e adiciona os atributos que não possuiam valor ou que eram de cardinalidade múltipla. Dessa maneira a unicidade do elemento é mantida.
+
+Value types possíveis pordem ser encontrados na doc https://docs.datomic.com/pro/schema/schema.html.

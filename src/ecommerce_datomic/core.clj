@@ -5,6 +5,6 @@
 (def conn (ecommerce.db/abre-conexao))
 (pprint conn)
 
-(ecommerce.db/cria-produto-schema conn)
+(ecommerce.db/cria-schema conn)
 
 

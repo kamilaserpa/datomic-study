@@ -14,3 +14,11 @@
     :produto/slug  slug
     :produto/preco preco}))
 
+(defn nova-categoria
+  ([nome]
+   (nova-categoria (generate-uuid) nome))
+  ([uuid nome]
+   {:categoria/id   uuid
+    :categoria/nome nome}))
+
+
