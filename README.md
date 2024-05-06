@@ -338,7 +338,7 @@ Então podemos acesar o banco no navegador pelo link http://localhost:8080/brows
 
 <img src="./images/datomic-console.png" width="800">
 
-### 1.4 - Identificadores únicos e UUIDs
+### 2.1.4 - Identificadores únicos e UUIDs
 O Datomic gera ids sequenciais permitindo inferir algum id, comprometendo a segurança de dados. Por esse modo adicionamos um identificador do tipo uuid para o produto como o atributo `:produto/id`.
 
 Para a consulta realizamos uma busca por referência ou [Lookup Refs](https://docs.datomic.com/pro/schema/identity.html#lookup-refs). "Uma referência de pesquisa é um java.util.List contendo um atributo e um valor. Ele identifica a entidade com o valor de atributo exclusivo fornecido." No nosso exemplo seria `[:produto/id produto-id]`.
@@ -347,3 +347,12 @@ Para a consulta realizamos uma busca por referência ou [Lookup Refs](https://do
 (defn busca-produto-por-uuid [db produto-id]
   (d/pull db '[*] [:produto/id produto-id]))
 ```
+
+### 2.2.2 Identificadores e unicidade no add
+Ao tentarmos transacionar uma entidade com o `produto/id` ja persistido no banco de dados:
+```clojure
+(def celular-barato-2 (model/novo-produto (:produto/id celular-barato) "CELULAR BARATO!!!", "celular-baratíssimo", 0.0001M))
+
+(pprint @(d/transact conn [celular-barato-2])))
+```
+Na verdade, a entidade foi sobrescrita, afinal o campo id é um indetificador único (db/unique). Quando tentamos inserir itens em um id já existente, é como se ocorre uma atualização do produto, isto é, acontece uma sobreposição. Ele sobrescreve os atributos daquela entidade e adiciona os atributos que não possuiam valor ou que eram de cardinalidade múltipla. Dessa maneira a unicidade do elemento é mantida.
